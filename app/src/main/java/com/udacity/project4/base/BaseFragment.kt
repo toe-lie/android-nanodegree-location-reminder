@@ -31,10 +31,10 @@ abstract class BaseFragment : Fragment() {
             Toast.makeText(activity, it, Toast.LENGTH_LONG).show()
         })
         _viewModel.showSnackBar.observe(this, Observer {
-            Snackbar.make(this.view!!, it, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
         })
         _viewModel.showSnackBarInt.observe(this, Observer {
-            Snackbar.make(this.view!!, getString(it), Snackbar.LENGTH_LONG).show()
+            Snackbar.make(requireView(), getString(it), Snackbar.LENGTH_LONG).show()
         })
 
         _viewModel.navigationCommand.observe(this, Observer { command ->
@@ -53,11 +53,11 @@ abstract class BaseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (protectedScreen) {
-            observeUnathenticatedState()
+            observeUnauthenticatedState()
         }
     }
 
-    private fun observeUnathenticatedState() {
+    private fun observeUnauthenticatedState() {
         _viewModel.authenticationState.observe(viewLifecycleOwner) { authState ->
             if (authState != AuthenticationState.AUTHENTICATED) {
                 val intent = Intent(requireContext(), AuthenticationActivity::class.java)

@@ -21,7 +21,7 @@ class ReminderListFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(
                 inflater,
@@ -67,7 +67,7 @@ class ReminderListFragment : BaseFragment() {
         }
 
         // setup the recycler view using the extension function
-        binding.reminderssRecyclerView.setup(adapter)
+        binding.remindersRecyclerView.setup(adapter)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
