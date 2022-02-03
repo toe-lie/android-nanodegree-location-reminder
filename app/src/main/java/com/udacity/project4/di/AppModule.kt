@@ -33,7 +33,7 @@ val viewModelModule = module {
 }
 
 val dataModule = module {
-    single { RemindersLocalRepository(get()) }
+    single { RemindersLocalRepository(get()) as ReminderDataSource }
     single { LocalDB.createRemindersDao(androidContext()) }
 }
 
