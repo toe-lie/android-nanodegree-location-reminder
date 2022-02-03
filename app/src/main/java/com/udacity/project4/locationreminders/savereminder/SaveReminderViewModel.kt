@@ -85,4 +85,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         }
         return true
     }
+
+    fun getSelectedLatLng(): LatLng {
+        return LatLng(latitude.value ?: 0.0, longitude.value ?: 0.0)
+    }
 }
