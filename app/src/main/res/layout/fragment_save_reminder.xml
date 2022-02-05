@@ -13,56 +13,70 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="?colorSurface">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/start_guideline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/padding_normal" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/end_guideline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="@dimen/padding_normal" />
 
         <EditText
             android:id="@+id/reminderTitle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_normal"
             android:hint="@string/reminder_title"
+            android:inputType="textCapWords"
             android:text="@={viewModel.reminderTitle}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/reminderDescription"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="start"
             android:hint="@string/reminder_desc"
             android:lines="10"
             android:text="@={viewModel.reminderDescription}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
             app:layout_constraintTop_toBottomOf="@id/reminderTitle" />
 
         <TextView
             android:id="@+id/selectLocation"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:drawableStart="@drawable/ic_location"
-            android:drawableLeft="@drawable/ic_location"
             android:focusable="true"
             android:gravity="center_vertical"
             android:text="@string/reminder_location"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="?colorOnSurface"
+            app:drawableStartCompat="@drawable/ic_location_24dp"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
             app:layout_constraintTop_toBottomOf="@id/reminderDescription" />
 
         <TextView
             android:id="@+id/selectedLocation"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginRight="@dimen/margin_normal"
+            android:gravity="end"
             android:text="@{viewModel.reminderSelectedLocationStr}"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="@id/selectLocation"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/selectLocation"
+            android:textColor="?colorOnSurface"
+            app:layout_constraintBaseline_toBaselineOf="@id/selectLocation"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            app:layout_constraintStart_toEndOf="@+id/selectLocation"
             tools:text="Location" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
