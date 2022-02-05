@@ -11,8 +11,13 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -27,9 +32,6 @@ import org.koin.test.get
 @LargeTest
 //END TO END test to black box test the app
 class RemindersActivityTest : KoinTest {
-
-    @get:Rule
-    val koinTestRule = KoinTestRule.create {}
 
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
@@ -74,4 +76,9 @@ class RemindersActivityTest : KoinTest {
 
 //    TODO: add End to End testing to the app
 
+    @Test
+    fun testttt() = runTest {
+        val a = 1
+        assertThat(repository.getReminder("1"), `is`(nullValue()))
+    }
 }
