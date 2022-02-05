@@ -96,7 +96,7 @@ class RemindersActivityTest : KoinTest {
         onView(withId(R.id.reminderDescription)).perform(typeText("description"), closeSoftKeyboard())
         onView(withId(R.id.saveReminder)).perform(click())
 
-        // Then verify task is displayed on screen
+        // Then verify reminder is displayed on screen
         onView(withText("title")).check(matches(isDisplayed()))
     }
 }
