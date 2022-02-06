@@ -129,6 +129,15 @@ class RemindersLocalRepositoryTest : KoinTest {
     }
 
     @Test
+    fun getReminderById_invalidId_returnsError() = runTest {
+        repository.saveReminder(newReminder)
+
+        val loaded = repository.getReminder("invalid_id")
+
+        assertThat(loaded, instanceOf(Result.Error::class.java))
+    }
+
+    @Test
     fun saveReminder_savesToLocalCache() = runTest {
         // Make sure newReminder is not in cache before save
         assertThat((repository.getReminders() as Result.Success).data, not(contains(newReminder)))
