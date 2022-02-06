@@ -1,32 +1,34 @@
 package com.udacity.project4
 
+import android.Manifest
+import android.app.Activity
 import android.app.Application
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.withDecorView
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
 import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
+import com.udacity.project4.authentication.AuthenticationViewModel
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
-import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
-import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.nullValue
+import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -37,9 +39,8 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
-import org.koin.test.KoinTestRule
-
 import org.koin.test.get
+
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -50,7 +51,10 @@ class RemindersActivityTest : KoinTest {
     private lateinit var appContext: Application
 
     @get:Rule
-    var permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+    var permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+    )
 
     // An Idling Resource that waits for Data Binding to have no pending bindings
     private val dataBindingIdlingResource = DataBindingIdlingResource()
@@ -69,6 +73,9 @@ class RemindersActivityTest : KoinTest {
                     appContext,
                     get() as ReminderDataSource
                 )
+            }
+            viewModel {
+                AuthenticationViewModel(appContext)
             }
             single {
                 SaveReminderViewModel(
@@ -124,9 +131,67 @@ class RemindersActivityTest : KoinTest {
             typeText("description"),
             closeSoftKeyboard()
         )
+        onView(withId(R.id.selectLocation)).perform(
+            click()
+        )
+
+        onView(withContentDescription("Google Map")).perform(longClick());
+        onView(withId(R.id.submit_button)).perform(click())
+
         onView(withId(R.id.saveReminder)).perform(click())
 
         // Then verify reminder is displayed on screen
         onView(withText("title")).check(matches(isDisplayed()))
+        // Verify toast is displayed
+        /**
+         * Fixme: Note to mentor: I checked the forum and saw how to test toast with this code,
+         * But when I run, the test is stuck here, the test is pass without toast check.
+         * So, I commented out.
+         * Could you please help how to test toast?
+         */
+//        onView(withText(R.string.reminder_saved)).inRoot(
+//            withDecorView(
+//                not(
+//                    `is`(
+//                        getActivity(
+//                            activityScenario
+//                        )?.window?.decorView
+//                    )
+//                )
+//            )
+//        )
+//            .check(
+//                matches(
+//                    isDisplayed()
+//                )
+//            )
+        activityScenario.close()
+    }
+
+    @Test
+    fun createReminder_requiredInput_showErrorMessageSnackbar() {
+        // start up Reminder List screen
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Click on the "+" button, add details, and save
+        onView(withId(R.id.addReminderFAB)).perform(click())
+
+        // Click on `save` button without typing any input
+        onView(withId(R.id.saveReminder)).perform(click())
+
+        // Verify that error snackbar is displayed
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.err_enter_title)))
+
+        activityScenario.close()
+    }
+
+    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity? {
+        var activity: Activity? = null
+        activityScenario.onActivity {
+            activity = it
+        }
+        return activity
     }
 }
