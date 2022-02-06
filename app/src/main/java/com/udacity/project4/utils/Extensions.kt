@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.base.BaseRecyclerViewAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -65,4 +66,36 @@ fun View.fadeOut() {
             this@fadeOut.visibility = View.GONE
         }
     })
+}
+
+
+/**
+ * Shows a [Snackbar] using `text`.
+ *
+ * @param text The Snackbar text.
+ */
+fun Fragment.showSnackbar(text: String) {
+    val container: View? = requireActivity().findViewById(android.R.id.content)
+    if (container != null) {
+        Snackbar.make(container, text, Snackbar.LENGTH_LONG).show()
+    }
+}
+
+/**
+ * Shows a [Snackbar].
+ *
+ * @param mainTextStringId The id for the string resource for the Snackbar text.
+ * @param actionStringId   The text of the action item.
+ * @param listener         The listener associated with the Snackbar action.
+ */
+fun Fragment.showSnackbar(
+    mainTextStringId: Int, actionStringId: Int,
+    listener: View.OnClickListener
+) {
+    Snackbar.make(
+        requireActivity().findViewById(android.R.id.content),
+        getString(mainTextStringId),
+        Snackbar.LENGTH_INDEFINITE
+    )
+        .setAction(getString(actionStringId), listener).show()
 }

@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
@@ -34,6 +35,7 @@ import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.geofence.GeofenceConstants
 import com.udacity.project4.locationreminders.geofence.errorMessage
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
+import com.udacity.project4.utils.showSnackbar
 import org.koin.android.ext.android.inject
 
 class SaveReminderFragment : BaseFragment(), OnCompleteListener<Void> {
@@ -271,36 +273,6 @@ class SaveReminderFragment : BaseFragment(), OnCompleteListener<Void> {
 
     //endregion: Geofencing
 
-    /**
-     * Shows a [Snackbar] using `text`.
-     *
-     * @param text The Snackbar text.
-     */
-    private fun showSnackbar(text: String) {
-        val container: View? = requireActivity().findViewById(android.R.id.content)
-        if (container != null) {
-            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show()
-        }
-    }
-
-    /**
-     * Shows a [Snackbar].
-     *
-     * @param mainTextStringId The id for the string resource for the Snackbar text.
-     * @param actionStringId   The text of the action item.
-     * @param listener         The listener associated with the Snackbar action.
-     */
-    private fun showSnackbar(
-        mainTextStringId: Int, actionStringId: Int,
-        listener: View.OnClickListener
-    ) {
-        Snackbar.make(
-            requireActivity().findViewById(android.R.id.content),
-            getString(mainTextStringId),
-            Snackbar.LENGTH_INDEFINITE
-        )
-            .setAction(getString(actionStringId), listener).show()
-    }
 
     /**
      * Runs when the result of calling {@link #addGeofence()}}
