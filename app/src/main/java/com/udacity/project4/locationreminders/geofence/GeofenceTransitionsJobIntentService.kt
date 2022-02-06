@@ -7,6 +7,7 @@ import androidx.core.app.JobIntentService
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import com.udacity.project4.R
+import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
@@ -52,7 +53,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
             geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT
         ) {
-            
+
             // Get the geofences that were triggered. A single event can trigger multiple geofences.
             val triggeringGeofences = geofencingEvent.triggeringGeofences
 
@@ -66,16 +67,21 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     private fun sendNotification(triggeringGeofences: List<Geofence>) {
         //Get the local repository instance
-        val remindersLocalRepository: RemindersLocalRepository by inject()
+        val remindersLocalRepository: ReminderDataSource by inject()
         // Interaction to the repository has to be through a coroutine scope
         CoroutineScope(coroutineContext).launch(SupervisorJob()) {
             // Get the Ids of each geofence that was triggered.
             val triggeringGeofencesIdsList: ArrayList<String> = ArrayList()
+            Log.d(TAG, "sendNotification: ${triggeringGeofences.size}; ${triggeringGeofences.map { it.requestId }}")
             for (geofence in triggeringGeofences) {
                 val requestId = geofence.requestId
                 //get the reminder with the request id
+                val ids =
+                    ((remindersLocalRepository.getReminders() as Result.Success).data).map { "${it.id}: ${it.title}" }
+                Log.d(TAG, "RequestId: $requestId, Ids: $ids")
                 val result = remindersLocalRepository.getReminder(requestId)
                 if (result is Result.Success<ReminderDTO>) {
+                    Log.d(TAG, "Found: $requestId; ${result.data.id}")
                     val reminderDTO = result.data
                     //send a notification to the user with the reminder details
                     sendNotification(

@@ -17,7 +17,7 @@ import android.util.Log
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "onReceive: GeofenceBroadcastReceiver")
+        Log.d(TAG, "Project4: onReceive: GeofenceBroadcastReceiver $intent")
         GeofenceTransitionsJobIntentService.enqueueWork(context, intent);
     }
 }

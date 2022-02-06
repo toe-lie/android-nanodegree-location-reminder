@@ -14,6 +14,7 @@ import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.math.ln
 
 class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSource) :
@@ -24,6 +25,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val selectedPOI = MutableLiveData<PointOfInterest>()
     val latitude = MutableLiveData<Double>()
     val longitude = MutableLiveData<Double>()
+    private var _newItemId: String? = null
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called
@@ -35,6 +37,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         selectedPOI.value = null
         latitude.value = null
         longitude.value = null
+        _newItemId = null
     }
 
     /**
@@ -86,7 +89,18 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         return true
     }
 
-    fun getSelectedLatLng(): LatLng {
-        return LatLng(latitude.value ?: 0.0, longitude.value ?: 0.0)
+    fun mapInputToDataItem(): ReminderDataItem {
+        return ReminderDataItem(
+            title = reminderTitle.value.orEmpty(),
+            description = reminderDescription.value.orEmpty(),
+            location = reminderSelectedLocationStr.value.orEmpty(),
+            latitude = latitude.value,
+            longitude = longitude.value,
+            id = _newItemId!!
+        )
+    }
+
+    fun generateReminderId() {
+        _newItemId = UUID.randomUUID().toString()
     }
 }
