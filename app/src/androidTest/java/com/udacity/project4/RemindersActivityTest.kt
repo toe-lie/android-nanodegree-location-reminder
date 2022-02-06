@@ -8,15 +8,13 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
-import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
+import com.udacity.project4.utils.EspressoIdlingResource
 import com.udacity.project4.authentication.AuthenticationViewModel
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.FakeDataSource
@@ -26,6 +24,7 @@ import com.udacity.project4.locationreminders.reminderslist.RemindersListViewMod
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
+import com.udacity.project4.utils.ToastManager
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
@@ -51,9 +50,8 @@ class RemindersActivityTest : KoinTest {
     private lateinit var appContext: Application
 
     @get:Rule
-    var permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+    var accessFineLocationPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        Manifest.permission.ACCESS_FINE_LOCATION
     )
 
     // An Idling Resource that waits for Data Binding to have no pending bindings
@@ -107,6 +105,7 @@ class RemindersActivityTest : KoinTest {
     fun registerIdlingResource() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().register(dataBindingIdlingResource)
+        IdlingRegistry.getInstance().register(ToastManager.getIdlingResource())
     }
 
     /**
@@ -116,6 +115,7 @@ class RemindersActivityTest : KoinTest {
     fun unregisterIdlingResource() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
+        IdlingRegistry.getInstance().unregister(ToastManager.getIdlingResource())
     }
 
     @Test
@@ -143,28 +143,15 @@ class RemindersActivityTest : KoinTest {
         // Then verify reminder is displayed on screen
         onView(withText("title")).check(matches(isDisplayed()))
         // Verify toast is displayed
-        /**
-         * Fixme: Note to mentor: I checked the forum and saw how to test toast with this code,
-         * But when I run, the test is stuck here, the test is pass without toast check.
-         * So, I commented out.
-         * Could you please help how to test toast?
-         */
-//        onView(withText(R.string.reminder_saved)).inRoot(
-//            withDecorView(
-//                not(
-//                    `is`(
-//                        getActivity(
-//                            activityScenario
-//                        )?.window?.decorView
-//                    )
-//                )
-//            )
-//        )
-//            .check(
-//                matches(
-//                    isDisplayed()
-//                )
-//            )
+        onView(withText(R.string.geofences_added)).inRoot(
+            withDecorView(not(`is`(getActivity(activityScenario)?.window?.decorView)))
+        )
+            .check(matches(isDisplayed()))
+        ToastManager.increment()
+        onView(withText(R.string.reminder_saved)).inRoot(
+            withDecorView(not(`is`(getActivity(activityScenario)?.window?.decorView)))
+        )
+            .check(matches(isDisplayed()))
         activityScenario.close()
     }
 

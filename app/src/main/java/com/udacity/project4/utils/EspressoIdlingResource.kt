@@ -1,4 +1,4 @@
-package com.example.android.architecture.blueprints.todoapp.util
+package com.udacity.project4.utils
 
 import androidx.test.espresso.idling.CountingIdlingResource
 

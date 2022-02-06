@@ -32,6 +32,7 @@ import com.udacity.project4.databinding.FragmentSaveReminderBinding
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.geofence.GeofenceConstants
 import com.udacity.project4.locationreminders.geofence.errorMessage
+import com.udacity.project4.utils.ToastManager
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import com.udacity.project4.utils.showSnackbar
 import kotlinx.android.synthetic.main.fragment_save_reminder.*
@@ -329,7 +330,11 @@ class SaveReminderFragment : BaseFragment(), OnCompleteListener<Void> {
      */
     override fun onComplete(task: Task<Void>) {
         if (task.isSuccessful) {
-            Toast.makeText(requireContext(), R.string.geofences_added, Toast.LENGTH_SHORT).show()
+            ToastManager.showToast(
+                requireContext(),
+                getString(R.string.geofences_added),
+                Toast.LENGTH_SHORT
+            ).show()
             Log.d(
                 TAG,
                 "onComplete: ${_viewModel.reminderSelectedLocationStr.value}: ${_viewModel.latitude.value}, ${_viewModel.longitude.value}"
@@ -342,7 +347,7 @@ class SaveReminderFragment : BaseFragment(), OnCompleteListener<Void> {
             } else {
                 requireContext().resources.getString(R.string.geofence_unknown_error)
             }
-            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+            ToastManager.showToast(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
             Log.w(TAG, errorMessage);
         }
         saveReminder()
