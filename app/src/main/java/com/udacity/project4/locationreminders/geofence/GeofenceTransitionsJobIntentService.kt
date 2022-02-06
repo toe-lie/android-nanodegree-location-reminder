@@ -50,9 +50,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         val geofenceTransition = geofencingEvent.geofenceTransition
         Log.d(TAG, "onHandleWork: geofenceTransition: $geofenceTransition")
         // Test that the reported transition was of interest.
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-            geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT
-        ) {
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
 
             // Get the geofences that were triggered. A single event can trigger multiple geofences.
             val triggeringGeofences = geofencingEvent.triggeringGeofences
