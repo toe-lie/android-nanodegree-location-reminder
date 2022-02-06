@@ -4,7 +4,19 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'kotlin-android-extensions'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
@@ -19,8 +31,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     kotlinOptions {
@@ -33,11 +46,6 @@ android {
             returnDefaultValues = true
         }
     }
-
-    //dataBinding {
-    //    enabled = true
-    //    enabledForTests = true
-    //}
     buildFeatures {
         dataBinding true
         viewBinding true
@@ -49,6 +57,9 @@ android {
         test {
             java.srcDirs += "src/sharedTest/java"
         }
+    }
+    lintOptions {
+        disable 'NullSafeMutableLiveData'
     }
 }
 
